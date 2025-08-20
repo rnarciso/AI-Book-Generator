@@ -8,20 +8,40 @@ document.addEventListener('DOMContentLoaded', () => {
     // Section 2: Agent Configuration
     const agentSelects = {
         planner: {
-            primary: document.getElementById('planner-primary'),
-            fallback: document.getElementById('planner-fallback')
+            primaryInput: document.getElementById('planner-primary-input'),
+            primaryValue: document.getElementById('planner-primary-value'),
+            primaryDropdown: document.getElementById('planner-primary-dropdown'),
+            fallbackInput: document.getElementById('planner-fallback-input'),
+            fallbackValue: document.getElementById('planner-fallback-value'),
+            fallbackDropdown: document.getElementById('planner-fallback-dropdown'),
+            fallbackTags: document.getElementById('planner-fallback-selected-tags')
         },
         writer: {
-            primary: document.getElementById('writer-primary'),
-            fallback: document.getElementById('writer-fallback')
+            primaryInput: document.getElementById('writer-primary-input'),
+            primaryValue: document.getElementById('writer-primary-value'),
+            primaryDropdown: document.getElementById('writer-primary-dropdown'),
+            fallbackInput: document.getElementById('writer-fallback-input'),
+            fallbackValue: document.getElementById('writer-fallback-value'),
+            fallbackDropdown: document.getElementById('writer-fallback-dropdown'),
+            fallbackTags: document.getElementById('writer-fallback-selected-tags')
         },
         critic: {
-            primary: document.getElementById('critic-primary'),
-            fallback: document.getElementById('critic-fallback')
+            primaryInput: document.getElementById('critic-primary-input'),
+            primaryValue: document.getElementById('critic-primary-value'),
+            primaryDropdown: document.getElementById('critic-primary-dropdown'),
+            fallbackInput: document.getElementById('critic-fallback-input'),
+            fallbackValue: document.getElementById('critic-fallback-value'),
+            fallbackDropdown: document.getElementById('critic-fallback-dropdown'),
+            fallbackTags: document.getElementById('critic-fallback-selected-tags')
         },
         summarizer: {
-            primary: document.getElementById('summarizer-primary'),
-            fallback: document.getElementById('summarizer-fallback')
+            primaryInput: document.getElementById('summarizer-primary-input'),
+            primaryValue: document.getElementById('summarizer-primary-value'),
+            primaryDropdown: document.getElementById('summarizer-primary-dropdown'),
+            fallbackInput: document.getElementById('summarizer-fallback-input'),
+            fallbackValue: document.getElementById('summarizer-fallback-value'),
+            fallbackDropdown: document.getElementById('summarizer-fallback-dropdown'),
+            fallbackTags: document.getElementById('summarizer-fallback-selected-tags')
         }
     };
 
@@ -79,29 +99,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             const models = data.data || []; // Adjust based on actual API response structure
 
-            // Clear existing options
-            Object.values(agentSelects).forEach(agent => {
-                agent.primary.innerHTML = '';
-                agent.fallback.innerHTML = '';
-            });
-
             if (models.length === 0) {
                 logStatus('Nenhum modelo encontrado. Verifique o endpoint e a chave, ou a estrutura da resposta da API.', 'error');
                 return;
             }
 
-            // Populate options
-            models.forEach(model => {
-                if (model.id) { // Filter for objects that have an 'id'
-                    const option = document.createElement('option');
-                    option.value = model.id;
-                    option.textContent = model.id;
+            const modelIds = models.map(model => model.id).filter(id => id);
 
-                    Object.values(agentSelects).forEach(agent => {
-                        agent.primary.appendChild(option.cloneNode(true));
-                        agent.fallback.appendChild(option.cloneNode(true));
-                    });
-                }
+            Object.values(agentSelects).forEach(agent => {
+                setupComboBox(agent.primaryInput, agent.primaryValue, agent.primaryDropdown, modelIds);
+                setupMultiComboBox(agent.fallbackInput, agent.fallbackValue, agent.fallbackDropdown, agent.fallbackTags, modelIds);
             });
 
             logStatus(`Carregados ${models.length} modelos com sucesso.`, 'success');
@@ -124,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function executeAgent(agentConfig, prompt, systemMessage = 'Você é um assistente de IA prestativo.') {
         const endpoint = apiEndpointInput.value;
         const apiKey = apiKeyInput.value;
-        const modelsToTry = [agentConfig.primary, ...agentConfig.fallback];
+        const modelsToTry = [agentConfig.primary, ...(agentConfig.fallback || [])];
 
         for (const model of modelsToTry) {
             if (!model) continue; // Skip if model is not selected
@@ -188,20 +195,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 maxRetries: parseInt(maxRetriesInput.value, 10),
                 agents: {
                     planner: {
-                        primary: agentSelects.planner.primary.value,
-                        fallback: Array.from(agentSelects.planner.fallback.selectedOptions).map(o => o.value)
+                        primary: agentSelects.planner.primaryValue.value,
+                        fallback: JSON.parse(agentSelects.planner.fallbackValue.value || '[]')
                     },
                     writer: {
-                        primary: agentSelects.writer.primary.value,
-                        fallback: Array.from(agentSelects.writer.fallback.selectedOptions).map(o => o.value)
+                        primary: agentSelects.writer.primaryValue.value,
+                        fallback: JSON.parse(agentSelects.writer.fallbackValue.value || '[]')
                     },
                     critic: {
-                        primary: agentSelects.critic.primary.value,
-                        fallback: Array.from(agentSelects.critic.fallback.selectedOptions).map(o => o.value)
+                        primary: agentSelects.critic.primaryValue.value,
+                        fallback: JSON.parse(agentSelects.critic.fallbackValue.value || '[]')
                     },
                     summarizer: {
-                        primary: agentSelects.summarizer.primary.value,
-                        fallback: Array.from(agentSelects.summarizer.fallback.selectedOptions).map(o => o.value)
+                        primary: agentSelects.summarizer.primaryValue.value,
+                        fallback: JSON.parse(agentSelects.summarizer.fallbackValue.value || '[]')
                     }
                 }
             };
@@ -425,4 +432,139 @@ for (let i = 0; i < settings.maxRetries; i++) {
     fetchModelsBtn.addEventListener('click', fetchModels);
     startGenerationBtn.addEventListener('click', startGeneration);
     exportBtn.addEventListener('click', exportContent);
+    // --- Combo Box Logic ---
+
+    function setupComboBox(inputElement, valueElement, dropdownElement, options) {
+        let filteredOptions = [];
+
+        function renderDropdown() {
+            dropdownElement.innerHTML = '';
+            if (filteredOptions.length === 0 && inputElement.value.length > 0) {
+                const noResults = document.createElement('div');
+                noResults.classList.add('combo-box-dropdown-item');
+                noResults.textContent = 'Nenhum resultado';
+                dropdownElement.appendChild(noResults);
+            } else {
+                filteredOptions.forEach(optionText => {
+                    const item = document.createElement('div');
+                    item.classList.add('combo-box-dropdown-item');
+                    item.textContent = optionText;
+                    item.addEventListener('click', () => {
+                        inputElement.value = optionText;
+                        valueElement.value = optionText;
+                        dropdownElement.style.display = 'none';
+                    });
+                    dropdownElement.appendChild(item);
+                });
+            }
+            dropdownElement.style.display = filteredOptions.length > 0 || inputElement.value.length > 0 ? 'block' : 'none';
+        }
+
+        inputElement.addEventListener('input', () => {
+            const query = inputElement.value.toLowerCase();
+            filteredOptions = options.filter(option => option.toLowerCase().includes(query));
+            renderDropdown();
+        });
+
+        inputElement.addEventListener('focus', () => {
+            if (inputElement.value === '') {
+                filteredOptions = [...options];
+            } else {
+                const query = inputElement.value.toLowerCase();
+                filteredOptions = options.filter(option => option.toLowerCase().includes(query));
+            }
+            renderDropdown();
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!inputElement.contains(event.target) && !dropdownElement.contains(event.target)) {
+                dropdownElement.style.display = 'none';
+            }
+        });
+
+        // Initialize with default value if hidden input has one
+        if (valueElement.value) {
+            inputElement.value = valueElement.value;
+        }
+    }
+
+    function setupMultiComboBox(inputElement, valueElement, dropdownElement, tagsContainer, allOptions) {
+        let selectedValues = JSON.parse(valueElement.value || '[]');
+        let filteredOptions = [];
+
+        function renderTags() {
+            tagsContainer.innerHTML = '';
+            selectedValues.forEach(value => {
+                const tag = document.createElement('span');
+                tag.classList.add('selected-tag');
+                tag.textContent = value;
+                const removeBtn = document.createElement('span');
+                removeBtn.classList.add('selected-tag-remove');
+                removeBtn.textContent = 'x';
+                removeBtn.addEventListener('click', () => {
+                    selectedValues = selectedValues.filter(val => val !== value);
+                    valueElement.value = JSON.stringify(selectedValues);
+                    renderTags();
+                    renderDropdown(); // Re-render dropdown to show removed option
+                });
+                tag.appendChild(removeBtn);
+                tagsContainer.appendChild(tag);
+            });
+        }
+
+        function renderDropdown() {
+            dropdownElement.innerHTML = '';
+            const availableOptions = allOptions.filter(option => !selectedValues.includes(option));
+
+            if (filteredOptions.length === 0 && inputElement.value.length > 0) {
+                const noResults = document.createElement('div');
+                noResults.classList.add('combo-box-dropdown-item');
+                noResults.textContent = 'Nenhum resultado';
+                dropdownElement.appendChild(noResults);
+            } else {
+                filteredOptions.forEach(optionText => {
+                    const item = document.createElement('div');
+                    item.classList.add('combo-box-dropdown-item');
+                    item.textContent = optionText;
+                    item.addEventListener('click', () => {
+                        if (!selectedValues.includes(optionText)) {
+                            selectedValues.push(optionText);
+                            valueElement.value = JSON.stringify(selectedValues);
+                            renderTags();
+                            inputElement.value = ''; // Clear input after selection
+                            filteredOptions = allOptions.filter(option => option.toLowerCase().includes('')); // Reset filtered options
+                            renderDropdown();
+                        }
+                    });
+                    dropdownElement.appendChild(item);
+                });
+            }
+            dropdownElement.style.display = filteredOptions.length > 0 || inputElement.value.length > 0 ? 'block' : 'none';
+        }
+
+        inputElement.addEventListener('input', () => {
+            const query = inputElement.value.toLowerCase();
+            filteredOptions = allOptions.filter(option =>
+                option.toLowerCase().includes(query) && !selectedValues.includes(option)
+            );
+            renderDropdown();
+        });
+
+        inputElement.addEventListener('focus', () => {
+            const query = inputElement.value.toLowerCase();
+            filteredOptions = allOptions.filter(option =>
+                option.toLowerCase().includes(query) && !selectedValues.includes(option)
+            );
+            renderDropdown();
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!inputElement.contains(event.target) && !dropdownElement.contains(event.target) && !tagsContainer.contains(event.target)) {
+                dropdownElement.style.display = 'none';
+            }
+        });
+
+        renderTags(); // Initial render of selected tags
+    }
+
 });

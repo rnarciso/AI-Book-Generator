@@ -55,11 +55,20 @@
                             <h6>Agente Planejador (Arquiteto)</h6>
                             <div class="form-group">
                                 <label>Modelo Primário</label>
-                                <select class="form-control model-select" id="planner-primary"></select>
+                                <div class="combo-box-container">
+                                    <input type="text" class="form-control combo-box-input" id="planner-primary-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
+                                    <input type="hidden" id="planner-primary-value">
+                                    <div class="combo-box-dropdown" id="planner-primary-dropdown"></div>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>Modelos de Fallback (ordem de preferência)</label>
-                                <select multiple class="form-control model-multiselect" id="planner-fallback"></select>
+                                <div class="combo-box-container multiple">
+                                    <div class="selected-tags" id="planner-fallback-selected-tags"></div>
+                                    <input type="text" class="form-control combo-box-input" id="planner-fallback-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
+                                    <div class="combo-box-dropdown" id="planner-fallback-dropdown"></div>
+                                    <input type="hidden" id="planner-fallback-value">
+                                </div>
                             </div>
                         </div>
                         <!-- Agente Escritor -->
@@ -67,11 +76,20 @@
                             <h6>Agente Escritor (Gerador de Texto)</h6>
                             <div class="form-group">
                                 <label>Modelo Primário</label>
-                                <select class="form-control model-select" id="writer-primary"></select>
+                                <div class="combo-box-container">
+                                    <input type="text" class="form-control combo-box-input" id="writer-primary-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
+                                    <input type="hidden" id="writer-primary-value">
+                                    <div class="combo-box-dropdown" id="writer-primary-dropdown"></div>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>Modelos de Fallback</label>
-                                <select multiple class="form-control model-multiselect" id="writer-fallback"></select>
+                                <div class="combo-box-container multiple">
+                                    <div class="selected-tags" id="writer-fallback-selected-tags"></div>
+                                    <input type="text" class="form-control combo-box-input" id="writer-fallback-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
+                                    <div class="combo-box-dropdown" id="writer-fallback-dropdown"></div>
+                                    <input type="hidden" id="writer-fallback-value">
+                                </div>
                             </div>
                         </div>
                         <!-- Agente Crítico -->
@@ -79,11 +97,20 @@
                             <h6>Agente Crítico (Avaliador)</h6>
                             <div class="form-group">
                                 <label>Modelo Primário</label>
-                                <select class="form-control model-select" id="critic-primary"></select>
+                                <div class="combo-box-container">
+                                    <input type="text" class="form-control combo-box-input" id="critic-primary-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
+                                    <input type="hidden" id="critic-primary-value">
+                                    <div class="combo-box-dropdown" id="critic-primary-dropdown"></div>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>Modelos de Fallback</label>
-                                <select multiple class="form-control model-multiselect" id="critic-fallback"></select>
+                                <div class="combo-box-container multiple">
+                                    <div class="selected-tags" id="critic-fallback-selected-tags"></div>
+                                    <input type="text" class="form-control combo-box-input" id="critic-fallback-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
+                                    <div class="combo-box-dropdown" id="critic-fallback-dropdown"></div>
+                                    <input type="hidden" id="critic-fallback-value">
+                                </div>
                             </div>
                         </div>
                         <!-- Agente Resumidor -->
@@ -91,11 +118,20 @@
                             <h6>Agente Resumidor (Contextualizador)</h6>
                             <div class="form-group">
                                 <label>Modelo Primário</label>
-                                <select class="form-control model-select" id="summarizer-primary"></select>
+                                <div class="combo-box-container">
+                                    <input type="text" class="form-control combo-box-input" id="summarizer-primary-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
+                                    <input type="hidden" id="summarizer-primary-value">
+                                    <div class="combo-box-dropdown" id="summarizer-primary-dropdown"></div>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>Modelos de Fallback</label>
-                                <select multiple class="form-control model-multiselect" id="summarizer-fallback"></select>
+                                <div class="combo-box-container multiple">
+                                    <div class="selected-tags" id="summarizer-fallback-selected-tags"></div>
+                                    <input type="text" class="form-control combo-box-input" id="summarizer-fallback-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
+                                    <div class="combo-box-dropdown" id="summarizer-fallback-dropdown"></div>
+                                    <input type="hidden" id="summarizer-fallback-value">
+                                </div>
                             </div>
                         </div>
                     </div>
