@@ -320,41 +320,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
             for (const paragraph of chapter.paragraphs) {
                 logStatus(`Gerando parágrafo: "${paragraph.ideia_central}"`);
-                let currentText = '';
-                let approved = false;
 
-                for (let i = 0; i < settings.maxRetries; i++) {
-                    logStatus(`Tentativa ${i + 1}/${settings.maxRetries} para o parágrafo.`);
+let currentText = '';
+let approved = false;
 
-                    // Generate or correct text
-                    const writerPrompt = currentText === ''
-                        ? `Gere um parágrafo com cerca de ${paragraph.palavras_alvo} palavras sobre a seguinte ideia: "${paragraph.ideia_central}". Contexto atual do livro: "${contextualSummary}"`
-                        : currentText; // On retries, the prompt is the text to be fixed + feedback
+// Initial generation
+logStatus(`Gerando rascunho inicial para o parágrafo: "${paragraph.ideia_central}"`);
+const initialWriterPrompt = `Gere um parágrafo com cerca de ${paragraph.palavras_alvo} palavras sobre a seguinte ideia: "${paragraph.ideia_central}". Contexto atual do livro: "${contextualSummary}"`;
+currentText = await executeAgent(settings.agents.writer, initialWriterPrompt, 'Você é um escritor de ficção/não-ficção criativo e eloquente.');
 
-                    currentText = await executeAgent(settings.agents.writer, writerPrompt, 'Você é um escritor de ficção/não-ficção criativo e eloquente.');
+for (let i = 0; i < settings.maxRetries; i++) {
+    logStatus(`Tentativa de refinamento ${i + 1}/${settings.maxRetries} para o parágrafo.`);
 
-                    // a. Validate Size
-                    const wordCount = getWordCount(currentText);
-                    const tolerance = 0.25; // 25% tolerance
-                    if (wordCount < paragraph.palavras_alvo * (1 - tolerance) || wordCount > paragraph.palavras_alvo * (1 + tolerance)) {
-                        logStatus(`Contagem de palavras (${wordCount}) fora da meta (${paragraph.palavras_alvo}). Refinando...`, 'info');
-                        currentText = await executeAgent(settings.agents.writer, `O texto a seguir está com a contagem de palavras incorreta. A meta é ${paragraph.palavras_alvo}, mas o texto tem ${wordCount}. Por favor, reescreva-o para atingir a meta. Texto: "${currentText}"`, 'Você é um editor conciso.');
-                        continue; // Re-evaluate the new text in the next loop
-                    }
+    // 1. Validate Size
+    const wordCount = getWordCount(currentText);
+    const tolerance = 0.25; // 25% tolerance
+    if (wordCount < paragraph.palavras_alvo * (1 - tolerance) || wordCount > paragraph.palavras_alvo * (1 + tolerance)) {
+        logStatus(`Contagem de palavras (${wordCount}) fora da meta (${paragraph.palavras_alvo}). Refinando tamanho...`, 'info');
+        const sizeCorrectionPrompt = `O texto a seguir está com a contagem de palavras incorreta. A meta é ${paragraph.palavras_alvo}, mas o texto tem ${wordCount}. Por favor, reescreva-o para atingir a meta. Texto: "${currentText}"`;
+        currentText = await executeAgent(settings.agents.writer, sizeCorrectionPrompt, 'Você é um editor conciso.');
+        continue; // Re-evaluate the new text in the next loop iteration
+    }
 
-                    // b. Validate Content
-                    const criticPrompt = `Avalie se o parágrafo a seguir cumpre efetivamente a sua ideia central. Ideia Central: "${paragraph.ideia_central}". Parágrafo: "${currentText}". Se cumprir, responda apenas "OK". Se não, forneça um feedback conciso e acionável para o escritor melhorar o texto.`;
-                    const feedback = await executeAgent(settings.agents.critic, criticPrompt, 'Você é um crítico literário rigoroso, focado em clareza, coesão e relevância.');
+    // 2. Validate Content
+    const criticPrompt = `Avalie se o parágrafo a seguir cumpre efetivamente a sua ideia central. Ideia Central: "${paragraph.ideia_central}". Parágrafo: "${currentText}". Se cumprir, responda apenas "OK". Se não, forneça um feedback conciso e acionável para o escritor melhorar o texto.`;
+    const feedback = await executeAgent(settings.agents.critic, criticPrompt, 'Você é um crítico literário rigoroso, focado em clareza, coesão e relevância.');
 
-                    if (feedback.trim().toUpperCase() === 'OK') {
-                        logStatus('Parágrafo aprovado pelo crítico.', 'success');
-                        approved = true;
-                        break; // Exit refinement loop
-                    } else {
-                        logStatus(`Crítico solicitou revisão: "${feedback}". Refinando...`, 'info');
-                        currentText = await executeAgent(settings.agents.writer, `O crítico deu o seguinte feedback sobre o parágrafo: "${feedback}". Reescreva o parágrafo para incorporar o feedback. Parágrafo original: "${currentText}"`, 'Você é um escritor que aprimora textos com base em críticas.');
-                    }
-                }
+    if (feedback.trim().toUpperCase() === 'OK') {
+        logStatus('Parágrafo aprovado pelo crítico.', 'success');
+        approved = true;
+        break; // Exit refinement loop, paragraph is good
+    } else {
+        logStatus(`Crítico solicitou revisão: "${feedback}". Refinando conteúdo...`, 'info');
+        const contentCorrectionPrompt = `O crítico deu o seguinte feedback sobre o parágrafo: "${feedback}". Reescreva o parágrafo para incorporar o feedback. Parágrafo original: "${currentText}"`;
+        currentText = await executeAgent(settings.agents.writer, contentCorrectionPrompt, 'Você é um escritor que aprimora textos com base em críticas.');
+        // No continue here, it will naturally go to the next iteration of the 'for' loop to re-evaluate both size and content if needed.
+    }
+}
 
                 if (approved) {
                     chapterContent += `<p>${currentText}</p>\n`;
