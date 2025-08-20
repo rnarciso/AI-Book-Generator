@@ -1,56 +1,169 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>AI Book Generator</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-        <link rel="stylesheet" href="styles.css">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    </head>
-    <body>
-        <div class="container" id="main-container">
-            <h1 class="text-center">AI Book Generator</h1>
-            <form id="input-form" class="my-4">
-                <div class="form-group">
-                    <label for="book-length">Book Length</label>
-                    <input type="text" id="book-length" class="form-control" placeholder="Enter book length" required>
-                </div>
-                <div class="form-group">
-                    <label for="gpt-role">Role of GPT-3.5</label>
-                    <input type="text" id="gpt-role" class="form-control" placeholder="Enter role of GPT-3.5 (a name of an author you like or a profession GPT should simulate)" required>
-                </div>
-                <div class="form-group">
-                    <label for="genre">Genre</label>
-                    <input type="text" id="genre" class="form-control" placeholder="Enter genre (Science-Fiction, Science Book, Advisory Book, Mystery, ...)" value="" required>
-                </div>
-                <div class="form-group">
-                    <label for="keywords">Keywords</label>
-                    <input type="text" id="keywords" class="form-control" placeholder="Enter keywords (e.g. Math, Science, Computer Science, Philosophy, ...)" required>
-                </div>
-                <div class="form-group">
-                    <input type="checkbox" id="auto-gen">
-                    <label for="auto-gen">Auto Generate Chapters</label>
-                </div>
-                <button type="button" id="conceptButton" class="btn btn-primary">Generate Concept</button>
-                <button type="button" id="contentButton" class="btn btn-primary">Generate Table of Contents</button>
-                <button type="button" id="chaptersButton" class="btn btn-primary">Generate Chapters</button>
-            </form>
-            <div class="form-group">
-                <label for="concept">Book Concept</label>
-                <textarea id="concept" class="form-control"></textarea>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Livros com Agentes de IA</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container my-5" id="main-container">
+        <h1 class="text-center mb-4">Gerador de Livros com Agentes de IA</h1>
+
+        <!-- SEÇÃO 1: Configurações Gerais -->
+        <div class="card settings-card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        1. Configurações Gerais da API
+                    </button>
+                </h5>
             </div>
-            <div class="form-group">
-                <label for="contents">Table of Contents</label>
-                <textarea id="contents" class="form-control"></textarea>
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-8">
+                            <label for="api-endpoint">Endpoint da API</label>
+                            <input type="text" id="api-endpoint" class="form-control" placeholder="ex: https://openrouter.ai/api/v1" value="https://openrouter.ai/api/v1">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="api-key">Chave da API</label>
+                            <input type="password" id="api-key" class="form-control" placeholder="Sua chave de API">
+                        </div>
+                    </div>
+                    <button id="fetch-models-btn" class="btn btn-secondary">Carregar Modelos Disponíveis</button>
+                    <small class="form-text text-muted mt-2">A chave da API é necessária para carregar os modelos e executar a geração.</small>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="chapters">Chapters</label>
-                <div id="chapters" class="border p-2"></div>
-            </div>
-            <button type="button" id="exportButton" class="btn btn-primary">Export to TXT</button>
         </div>
-        <script src="apikey.js"></script>
-        <script src="script.js"></script>
-    </body>
+
+        <!-- SEÇÃO 2: Configuração dos Agentes -->
+        <div class="card settings-card">
+            <div class="card-header" id="headingTwo">
+                <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        2. Configuração dos Agentes de IA
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Agente Planejador -->
+                        <div class="col-md-6 agent-config-box">
+                            <h6>Agente Planejador (Arquiteto)</h6>
+                            <div class="form-group">
+                                <label>Modelo Primário</label>
+                                <select class="form-control model-select" id="planner-primary"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Modelos de Fallback (ordem de preferência)</label>
+                                <select multiple class="form-control model-multiselect" id="planner-fallback"></select>
+                            </div>
+                        </div>
+                        <!-- Agente Escritor -->
+                        <div class="col-md-6 agent-config-box">
+                            <h6>Agente Escritor (Gerador de Texto)</h6>
+                            <div class="form-group">
+                                <label>Modelo Primário</label>
+                                <select class="form-control model-select" id="writer-primary"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Modelos de Fallback</label>
+                                <select multiple class="form-control model-multiselect" id="writer-fallback"></select>
+                            </div>
+                        </div>
+                        <!-- Agente Crítico -->
+                        <div class="col-md-6 agent-config-box">
+                            <h6>Agente Crítico (Avaliador)</h6>
+                            <div class="form-group">
+                                <label>Modelo Primário</label>
+                                <select class="form-control model-select" id="critic-primary"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Modelos de Fallback</label>
+                                <select multiple class="form-control model-multiselect" id="critic-fallback"></select>
+                            </div>
+                        </div>
+                        <!-- Agente Resumidor -->
+                        <div class="col-md-6 agent-config-box">
+                            <h6>Agente Resumidor (Contextualizador)</h6>
+                            <div class="form-group">
+                                <label>Modelo Primário</label>
+                                <select class="form-control model-select" id="summarizer-primary"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Modelos de Fallback</label>
+                                <select multiple class="form-control model-multiselect" id="summarizer-fallback"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 3: Parâmetros da Geração -->
+        <div class="card settings-card">
+            <div class="card-header" id="headingThree">
+                <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        3. Parâmetros da Geração do Livro
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseThree" class="collapse" aria-labelledby="headingThree">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="book-theme">Tema do Livro</label>
+                        <input type="text" id="book-theme" class="form-control" placeholder="Ex: A história da computação quântica">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="target-word-count">Total de Palavras Alvo</label>
+                            <input type="number" id="target-word-count" class="form-control" value="10000">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="max-retries">Máximo de Tentativas de Correção por Parágrafo</label>
+                            <input type="number" id="max-retries" class="form-control" value="3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 4: Controles e Visualização -->
+        <div class="text-center my-4">
+            <button id="start-generation-btn" class="btn btn-primary btn-lg">Iniciar Geração do Livro</button>
+        </div>
+
+        <div id="status-container" class="mt-4">
+            <h5>Status da Geração</h5>
+            <div id="status-log" class="border p-3" style="height: 150px; overflow-y: scroll; background-color: #f8f9fa;"></div>
+        </div>
+
+        <div id="approval-container" class="mt-4" style="display: none;">
+            <h5>Ponto de Controle: Aprovação do Blueprint</h5>
+            <div id="approval-content" class="border p-3"></div>
+            <div class="text-center mt-2">
+                <button id="approve-btn" class="btn btn-success">Aprovar e Continuar</button>
+                <button id="reject-btn" class="btn btn-danger">Cancelar Geração</button>
+            </div>
+        </div>
+
+        <div id="book-output-container" class="mt-4">
+            <h5>Conteúdo Gerado</h5>
+            <div id="book-output" class="border p-3" style="min-height: 300px;"></div>
+        </div>
+
+        <div class="text-center my-4">
+            <button id="export-btn" class="btn btn-secondary">Exportar para TXT</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="script.js"></script>
+</body>
 </html>
