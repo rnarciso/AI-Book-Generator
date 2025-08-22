@@ -16,7 +16,7 @@
             <div class="card-header" id="headingOne">
                 <h5 class="mb-0">
                     <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        1. Configurações Gerais da API
+                        1. Configurações da API e Modelos
                     </button>
                 </h5>
             </div>
@@ -33,7 +33,6 @@
                         </div>
                     </div>
                     <button id="fetch-models-btn" class="btn btn-secondary">Carregar Modelos Disponíveis</button>
-                    <small class="form-text text-muted mt-2">A chave da API é necessária para carregar os modelos e executar a geração.</small>
                 </div>
             </div>
         </div>
@@ -50,89 +49,26 @@
             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo">
                 <div class="card-body">
                     <div class="row">
-                        <!-- Agente Planejador -->
+                        <!-- Agent Config Boxes will be here -->
                         <div class="col-md-6 agent-config-box">
                             <h6>Agente Planejador (Arquiteto)</h6>
-                            <div class="form-group">
-                                <label>Modelo Primário</label>
-                                <div class="combo-box-container">
-                                    <input type="text" class="form-control combo-box-input" id="planner-primary-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
-                                    <input type="hidden" id="planner-primary-value">
-                                    <div class="combo-box-dropdown" id="planner-primary-dropdown"></div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Modelos de Fallback (ordem de preferência)</label>
-                                <div class="combo-box-container multiple">
-                                    <div class="selected-tags" id="planner-fallback-selected-tags"></div>
-                                    <input type="text" class="form-control combo-box-input" id="planner-fallback-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
-                                    <div class="combo-box-dropdown" id="planner-fallback-dropdown"></div>
-                                    <input type="hidden" id="planner-fallback-value">
-                                </div>
-                            </div>
+                            <div class="form-group"><label>Modelo Primário</label><select class="form-control model-select" id="planner-primary"></select></div>
+                            <div class="form-group"><label>Modelos de Fallback</label><select multiple class="form-control model-multiselect" id="planner-fallback"></select></div>
                         </div>
-                        <!-- Agente Escritor -->
                         <div class="col-md-6 agent-config-box">
                             <h6>Agente Escritor (Gerador de Texto)</h6>
-                            <div class="form-group">
-                                <label>Modelo Primário</label>
-                                <div class="combo-box-container">
-                                    <input type="text" class="form-control combo-box-input" id="writer-primary-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
-                                    <input type="hidden" id="writer-primary-value">
-                                    <div class="combo-box-dropdown" id="writer-primary-dropdown"></div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Modelos de Fallback</label>
-                                <div class="combo-box-container multiple">
-                                    <div class="selected-tags" id="writer-fallback-selected-tags"></div>
-                                    <input type="text" class="form-control combo-box-input" id="writer-fallback-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
-                                    <div class="combo-box-dropdown" id="writer-fallback-dropdown"></div>
-                                    <input type="hidden" id="writer-fallback-value">
-                                </div>
-                            </div>
+                            <div class="form-group"><label>Modelo Primário</label><select class="form-control model-select" id="writer-primary"></select></div>
+                            <div class="form-group"><label>Modelos de Fallback</label><select multiple class="form-control model-multiselect" id="writer-fallback"></select></div>
                         </div>
-                        <!-- Agente Crítico -->
                         <div class="col-md-6 agent-config-box">
                             <h6>Agente Crítico (Avaliador)</h6>
-                            <div class="form-group">
-                                <label>Modelo Primário</label>
-                                <div class="combo-box-container">
-                                    <input type="text" class="form-control combo-box-input" id="critic-primary-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
-                                    <input type="hidden" id="critic-primary-value">
-                                    <div class="combo-box-dropdown" id="critic-primary-dropdown"></div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Modelos de Fallback</label>
-                                <div class="combo-box-container multiple">
-                                    <div class="selected-tags" id="critic-fallback-selected-tags"></div>
-                                    <input type="text" class="form-control combo-box-input" id="critic-fallback-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
-                                    <div class="combo-box-dropdown" id="critic-fallback-dropdown"></div>
-                                    <input type="hidden" id="critic-fallback-value">
-                                </div>
-                            </div>
+                            <div class="form-group"><label>Modelo Primário</label><select class="form-control model-select" id="critic-primary"></select></div>
+                            <div class="form-group"><label>Modelos de Fallback</label><select multiple class="form-control model-multiselect" id="critic-fallback"></select></div>
                         </div>
-                        <!-- Agente Resumidor -->
                         <div class="col-md-6 agent-config-box">
                             <h6>Agente Resumidor (Contextualizador)</h6>
-                            <div class="form-group">
-                                <label>Modelo Primário</label>
-                                <div class="combo-box-container">
-                                    <input type="text" class="form-control combo-box-input" id="summarizer-primary-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
-                                    <input type="hidden" id="summarizer-primary-value">
-                                    <div class="combo-box-dropdown" id="summarizer-primary-dropdown"></div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Modelos de Fallback</label>
-                                <div class="combo-box-container multiple">
-                                    <div class="selected-tags" id="summarizer-fallback-selected-tags"></div>
-                                    <input type="text" class="form-control combo-box-input" id="summarizer-fallback-input" placeholder="Selecione ou digite para filtrar" autocomplete="off">
-                                    <div class="combo-box-dropdown" id="summarizer-fallback-dropdown"></div>
-                                    <input type="hidden" id="summarizer-fallback-value">
-                                </div>
-                            </div>
+                            <div class="form-group"><label>Modelo Primário</label><select class="form-control model-select" id="summarizer-primary"></select></div>
+                            <div class="form-group"><label>Modelos de Fallback</label><select multiple class="form-control model-multiselect" id="summarizer-fallback"></select></div>
                         </div>
                     </div>
                 </div>
@@ -154,13 +90,28 @@
                         <label for="book-theme">Tema do Livro</label>
                         <input type="text" id="book-theme" class="form-control" placeholder="Ex: A história da computação quântica">
                     </div>
+                    <!-- Original Inputs -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="gpt-role">Estilo do Autor / Papel da IA</label>
+                            <input type="text" id="gpt-role" class="form-control" placeholder="Ex: um historiador cético, um autor de ficção científica otimista">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="genre">Gênero</label>
+                            <input type="text" id="genre" class="form-control" placeholder="Ex: Ficção Científica, Fantasia, Terror Psicológico">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="keywords">Palavras-chave (separadas por vírgula)</label>
+                        <input type="text" id="keywords" class="form-control" placeholder="Ex: inteligência artificial, singularidade, ética">
+                    </div>
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="target-word-count">Total de Palavras Alvo</label>
                             <input type="number" id="target-word-count" class="form-control" value="10000">
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="max-retries">Máximo de Tentativas de Correção por Parágrafo</label>
+                            <label for="max-retries">Máximo de Tentativas de Correção</label>
                             <input type="number" id="max-retries" class="form-control" value="3">
                         </div>
                     </div>
@@ -175,11 +126,11 @@
 
         <div id="status-container" class="mt-4">
             <h5>Status da Geração</h5>
-            <div id="status-log" class="border p-3" style="height: 150px; overflow-y: scroll; background-color: #f8f9fa;"></div>
+            <div id="status-log" class="border p-3"></div>
         </div>
 
         <div id="approval-container" class="mt-4" style="display: none;">
-            <h5>Ponto de Controle: Aprovação do Blueprint</h5>
+            <h5>Ponto de Controle: Aprovação do Usuário</h5>
             <div id="approval-content" class="border p-3"></div>
             <div class="text-center mt-2">
                 <button id="approve-btn" class="btn btn-success">Aprovar e Continuar</button>
@@ -189,7 +140,7 @@
 
         <div id="book-output-container" class="mt-4">
             <h5>Conteúdo Gerado</h5>
-            <div id="book-output" class="border p-3" style="min-height: 300px;"></div>
+            <div id="book-output" class="border p-3"></div>
         </div>
 
         <div class="text-center my-4">

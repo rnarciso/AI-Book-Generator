@@ -12,11 +12,10 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
+h1, h5, h6 {
     color: #343a40;
 }
 
-/* Card styles for collapsable sections */
 .settings-card {
     margin-bottom: 1rem;
     border: 1px solid #dee2e6;
@@ -33,112 +32,33 @@ h1 {
     text-decoration: none;
 }
 
-.settings-card .btn-link:hover {
-    color: #0056b3;
-}
-
-/* Agent configuration boxes */
 .agent-config-box {
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
     border-radius: 5px;
     padding: 15px;
-    margin-bottom: 15px;
+    margin-top: 10px;
 }
 
 .agent-config-box h6 {
     font-weight: bold;
-    color: #343a40;
     margin-bottom: 1rem;
 }
 
-/* Make multiselect boxes taller */
 .model-multiselect {
     min-height: 120px;
 }
 
-/* Combo Box Styles */
-.combo-box-container {
-    position: relative;
-    margin-bottom: 1rem; /* Adjust as needed */
-}
-
-.combo-box-input {
-    width: 100%;
-    padding-right: 30px; /* Space for a dropdown arrow if desired */
-}
-
-.combo-box-dropdown {
-    position: absolute;
-    width: 100%;
-    max-height: 200px;
-    overflow-y: auto;
-    border: 1px solid #ced4da;
-    border-top: none;
-    background-color: #fff;
-    z-index: 1000;
-    display: none; /* Hidden by default */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.combo-box-dropdown-item {
-    padding: 8px 12px;
-    cursor: pointer;
-}
-
-.combo-box-dropdown-item:hover {
-    background-color: #e9ecef;
-}
-
-.combo-box-dropdown-item.selected {
-    background-color: #007bff;
-    color: #fff;
-}
-
-/* Styles for multi-select combo box */
-.combo-box-container.multiple .combo-box-input {
-    padding-left: 10px;
-}
-
-.selected-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    padding: 5px;
-    border: 1px solid #ced4da;
-    border-radius: .25rem;
-    margin-bottom: 5px;
-    min-height: 38px; /* Match input height */
-    align-items: center;
-}
-
-.selected-tag {
-    background-color: #007bff;
-    color: white;
-    padding: 3px 8px;
-    border-radius: 3px;
-    display: flex;
-    align-items: center;
-    font-size: 0.85em;
-}
-
-.selected-tag-remove {
-    margin-left: 5px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-/* Status and Output */
-#status-log {
+#status-log, #approval-content pre {
     background-color: #212529;
     color: #f8f9fa;
     font-family: 'Courier New', Courier, monospace;
     font-size: 0.9rem;
     padding: 1rem;
     border-radius: 5px;
-    height: 200px;
-    overflow-y: scroll;
     border: 1px solid #495057;
+    max-height: 250px;
+    overflow-y: scroll;
 }
 
 #approval-container {
@@ -148,26 +68,12 @@ h1 {
     background-color: #f0f8ff;
 }
 
-#approval-container h5, #approval-container h6 {
-    color: #004085;
-}
-
-#approval-content pre {
-    background-color: #ffffff;
-    padding: 1rem;
-    border-radius: 4px;
-    border: 1px solid #dee2e6;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
 #book-output {
     background-color: #ffffff;
     border: 1px solid #ced4da;
-    min-height: 400px;
+    min-height: 300px;
     padding: 1.5rem;
     border-radius: 5px;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
 
 #book-output h2 {
