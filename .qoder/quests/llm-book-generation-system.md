@@ -20,6 +20,82 @@ This document analyzes the current AI Book Generation system to verify complianc
 - User approval checkpoints for quality control
 - Contextual summary generation between chapters
 
+## How to Run the Application
+
+### Prerequisites
+- Python 3.x installed (for local HTTP server)
+- AI API key (OpenRouter, OpenAI, Anthropic, or Google Gemini)
+- Web browser for accessing the interface
+
+### Current Implementation: Static Frontend Only
+
+The project currently consists of a **static frontend implementation** with HTML, CSS, and JavaScript files. There are no Python backend files (`app.py`, `enhanced_app.py`) in the current codebase.
+
+### Running the Application
+
+1. **Navigate to project directory:**
+   ```bash
+   cd /path/to/AI-Book-Generation
+   ```
+
+2. **Start local HTTP server:**
+   
+   **For Python 3:**
+   ```bash
+   python3 -m http.server 8080
+   ```
+   
+   **For Python 2:**
+   ```bash
+   python2 -m SimpleHTTPServer 8080
+   ```
+
+   **Alternative using Node.js (if available):**
+   ```bash
+   npx http-server -p 8080
+   ```
+
+3. **Access the application:**
+   - Open your web browser
+   - Navigate to: `http://localhost:8080`
+   - The AI Book Generator interface will load from `index.html`
+
+### Project Structure Analysis
+
+**Current Files:**
+- `index.html` - Main application interface
+- `script.js` - Core application logic and workflow implementation
+- `styles.css` - UI styling
+- `backend/` - Empty directory (only contains venv)
+- `frontend/` - Contains node_modules but no source files
+
+**Note:** The project memory references Python backend components and Gradio interfaces, but these are **not present** in the current codebase. The current implementation is a **pure frontend JavaScript application** that communicates directly with AI APIs.
+
+### Application Configuration
+
+1. **API Configuration:**
+   - Enter your API endpoint (e.g., `https://openrouter.ai/api/v1`)
+   - Provide your API key in the secure input field
+   - Click "Carregar Modelos Disponíveis" to fetch available models
+
+2. **Agent Configuration:**
+   - Select primary models for each agent (Planner, Writer, Critic, Summarizer)
+   - Configure fallback models for redundancy
+   - Ensure all agents have at least a primary model selected
+
+3. **Generation Parameters:**
+   - Set book theme, genre, and keywords
+   - Configure target word count and max retry attempts
+   - Define author style and role preferences
+
+### Troubleshooting
+
+- **Port already in use**: Try different ports (8081, 8082, etc.)
+- **API connection issues**: Verify API key and endpoint URL
+- **CORS errors**: Use proper HTTP server, not file:// protocol
+- **Model loading failures**: Check internet connection and API quotas
+- **Browser compatibility**: Use modern browsers (Chrome, Firefox, Safari, Edge)
+
 ## Architecture
 
 ### Component Hierarchy
